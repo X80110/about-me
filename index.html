@@ -1,0 +1,435 @@
+
+    <!doctype html>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="./styles.css" />
+        <style type="text/css">[data-theme="light"] {
+  --bg-color: #fff;
+  --bg-color-secondary: #eee6;
+  --text-color: #111;
+}
+
+[data-theme="dark"] {
+  --bg-color: #171717;
+  --bg-color-secondary: #262626;
+  --text-color: #eee;
+}
+
+.block {
+  font-family: 'Proxima Nova', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.container {
+  max-width: 1200px;
+}
+
+.heading {
+  font-size:40px;
+  font-weight: 500;
+  line-height:50px;
+  margin-bottom: 1rem;
+}
+
+.primo-copy p {
+  font-family: Proxima Nova, sans-serif;
+  color: var(--text-color);
+  font-size: 17px;
+  line-height: 28px;
+}</style>
+        
+        
+      </head>
+      <body data-instant-intensity="all" class="primo-page">   
+        
+      <div class="block" id="block-dsmzp">
+        <div class="primo-component" id="component-dsmzp">
+          <div><ul
+        class="sticky"
+        class:isStuck
+        data-position={stickToTop ? 'top' : 'bottom'}
+        use:sticky=
+        on:stuck={handleStuck}>
+   		<li><a href="#about-me">About me</a></li>
+    	<li><a href="#contact">Contact </a></li>
+</ul>
+</div>
+          <script type="module">
+        const primo = {
+          id: 'dsmzp',
+          data: {"about":{"label":"About me","url":"#about-me","active":false},"portfolio":{"label":"","url":"#about-us","active":false}},
+          fields: [{"id":"ucpyw","key":"about","label":"About Me","value":{"label":"About me","url":"#about-me","active":false},"type":"link","fields":[]},{"id":"ckife","key":"portfolio","label":"Portfolio","value":{"label":"","url":"#about-us","active":false},"type":"link","fields":[]}]
+        }
+        let isStuck = true
+
+/**
+ * Svelte action that dispatches a custom stuck event when a node becomes stuck or unstuck (position: sticky is having an effect)
+ * @param node  - the node the action is placed on
+ * @param params.callback - function to execute when the node becomes stuck or unstuck
+ */
+// source https://svelte.dev/repl/4ad71e00c86c47d29806e17f09ff0869?version=3.42.1
+function sticky(node, { stickToTop }) {
+    const intersectionCallback = function (entries) {
+        // only observing one item at a time
+        const entry = entries[0];
+
+        let isStuck = false;
+        if (!entry.isIntersecting && isValidYPosition(entry)) {
+            isStuck = true;
+        }
+
+        node.dispatchEvent(new CustomEvent('stuck', {
+            detail: { isStuck }
+        }));
+    };
+
+    const isValidYPosition = function ({ target, boundingClientRect }) {
+        if (target === stickySentinelTop) {
+            return boundingClientRect.y < 0;
+        } else {
+            return boundingClientRect.y > 0;
+        }
+    };
+
+    const mutationCallback = function (mutations) {
+        // If something changes and the sentinel nodes are no longer first and last child, put them back in position
+        mutations.forEach(function (mutation) {
+            const { parentNode: topParent } = stickySentinelTop;
+            const { parentNode: bottomParent } = stickySentinelBottom;
+
+            if (stickySentinelTop !== topParent.firstChild) {
+                topParent.prepend(stickySentinelTop);
+            }
+            if (stickySentinelBottom !== bottomParent.lastChild) {
+                bottomParent.append(stickySentinelBottom);
+            }
+        });
+    };
+
+    const intersectionObserver = new IntersectionObserver(
+        intersectionCallback,
+        {}
+    );
+    const mutationObserver = new MutationObserver(mutationCallback);
+
+    // we insert and observe a sentinel node immediately after the target
+    // when it is visible, the target node cannot be sticking
+		const sentinelStyle = 'position: absolute; height: 1px;';
+    const stickySentinelTop = document.createElement('div');
+    stickySentinelTop.classList.add('stickySentinelTop');
+	  // without setting a height, Safari breaks
+	  stickySentinelTop.style = sentinelStyle;
+    node.parentNode.prepend(stickySentinelTop);
+
+    const stickySentinelBottom = document.createElement('div');
+    stickySentinelBottom.classList.add('stickySentinelBottom');
+	  stickySentinelBottom.style = sentinelStyle;
+    node.parentNode.append(stickySentinelBottom);
+
+    if (stickToTop) {
+        intersectionObserver.observe(stickySentinelTop);
+    } else {
+        intersectionObserver.observe(stickySentinelBottom);
+    }
+
+    mutationObserver.observe(node.parentNode, { childList: true });
+
+    return {
+        update({ stickToTop }) {
+            // change which sentinel we are observing
+            if (stickToTop) {
+                intersectionObserver.unobserve(stickySentinelBottom);
+                intersectionObserver.observe(stickySentinelTop);
+            } else {
+                intersectionObserver.unobserve(stickySentinelTop);
+                intersectionObserver.observe(stickySentinelBottom);
+            }
+        },
+
+        destroy() {
+            intersectionObserver.disconnect();
+            mutationObserver.disconnect();
+        }
+    };
+}
+</script>
+        </div>
+        <style type="text/css">#component-dsmzp ul {
+    margin: 0 2.5em 0 0;
+    text-align:right;
+  }
+  #component-dsmzp li {
+    display:inline-block;
+    margin:1em;
+  }
+  #component-dsmzp a {
+    -webkit-text-decoration: underline solid #04c1a0 2.5px;
+            text-decoration: underline solid #04c1a0 2.5px;
+  }
+  #component-dsmzp .sticky {
+    position: -webkit-sticky;
+    position: sticky;
+    padding: 1rem;
+    /* background: mistyrose; */
+    transition: all 0.3s;
+  }
+  #component-dsmzp .sticky[data-position='top'] {
+    top: 1rem;
+  }
+  #component-dsmzp .sticky[data-position='bottom'] {
+    bottom: 1rem;
+  }
+  #component-dsmzp .sticky.isStuck {
+    background: mintcream;
+    box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.2),
+            0px 0px 6px 0px rgba(0, 0, 0, 0.3);
+  }
+  #component-dsmzp section {
+    border: 1px solid lightskyblue;
+    border-radius: 5px;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+  }</style>
+      </div>
+      
+      <div class="block" id="block-oktpu">
+        <div class="primo-component" id="component-oktpu">
+          <div><div class="header">
+  <div class="container">
+      <a href="#" class="logo-text">Xavier Bolló</a>
+      <h1>Let's find value and stories in data</h1>
+  </div>
+</div></div>
+          
+        </div>
+        <style type="text/css">#component-oktpu {
+  --primary-color: #333;
+}
+  #component-oktpu .header{
+    padding:70px 0;
+  }
+  #component-oktpu a {
+    font-weight:800;
+  }
+  #component-oktpu .logo-text {
+    font-size:40px;
+    line-height:50px;
+    display:inline-block;
+    margin:0;
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+    border-color: #04c1a0;
+    border-opacity: 0.25;
+  }
+  #component-oktpu h1 {
+    font-size:70px;
+    line-height:92px;
+    margin:70px 0 0 0;
+    font-weight:600;
+  }</style>
+      </div>
+      
+      <div class="block" id="block-oegwk">
+        <div class="primo-component" id="component-oegwk">
+          <div><section>
+    <div class="container primo-copy">
+      <h2 id="about-me" class="heading">About me</h2>
+
+    </div>
+  	
+  	<div class="container primo-copy">
+      <div> <p>My name is <strong>Xavier Bolló</strong>. For the last 10 years I've served businesses as a <strong>consultant in digital strategies and business development</strong>. During this period I've been lucky to collaborate hand by hand with many companies from many different sectors helping them meet their value with their potential buyers.</p>
+<p>I have always been amazed by the power held in the information technologies. <strong>I like tracking and automating operations</strong>. I think that there are great opportunities in today's technology for humans to leverage our uniqueness. The last 3 years I've been interested in mastering information so I obtained a Postgraduate in Big Data (2019) and another Postgraduate in Data Visualization (2020).</p>
+<p>On June (2021) I obtained a Master's Degree in <a href="http://www.mastervisualtoolsudg.com/">Visual Tools to Empower Citizenship</a> which I'm proud to mention and refer. I have been able to dive deep into data engineering (Python), statistical (R) and spatial analysis (GIS), data ethics evaluation and data visualization programming (d3.js &amp; Svelte).</p>
+<p>With these tools and experience, I am always excited to work <strong>understanding the stories in the data and finding the best way to communicate them in order to satisfy an ultimate purpose: <u><strong>help everybody make better decisions</strong></u></strong>.</p></div>
+      <div> 
+    			<img 
+      			src="https://raw.githubusercontent.com/melondulzon/R-BData/master/2020xavier.jpeg"
+      			alt="Xavier Bolló - Data visualization programming - Visualització de dades"
+          />
+      </div>
+      <div>
+        <u><strong><a href="https://github.com/melondulzon/R-BData/raw/master/CV%20(ENG)%202021.pdf">Download my CV (PDF)<a></strong></u>
+      </div>
+  </div>
+</section>
+</div>
+          
+        </div>
+        <style type="text/css">#component-oegwk section {
+    background: var(--bg-color-secondary);
+    padding: 6rem 0;
+  }
+  #component-oegwk .container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-gap: 3rem;
+  }
+  #component-oegwk .content {
+    flex: 1;
+    margin-top: 1rem;
+  }
+  #component-oegwk img {
+    margin-left: auto;
+  }
+  @media (max-width: 500px){
+    #component-oegwk .container{
+      grid-template-columns:1fr;
+    }
+  }</style>
+      </div>
+      
+      <div class="block" id="block-sytvy">
+        <div class="primo-component" id="component-sytvy">
+          <div><section>
+  <div class="container primo-copy">
+		<h2 id="contact" class="heading">Contact Me</h2>
+ 	
+    <div>
+      <p>I'm always open to push my boundaries when its about making things more fair and easy. <strong>Let's talk!</strong></p>
+  
+      Send me an email to <strong>xbollo@gmail.com</strong> or contact me on <u><a href="http:https://www.linkedin.com/in/xavier-bollo">LinkedIn</a></u>
+  	</div>
+  </div>
+    <form class="hidden" action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSdrf857PbZN4LKBmiMs4WTBXWQ6ki39xx28TMx3nP0RKSTkcQ/formResponse" method="post" spellcheck="false" autocomplete="off">
+      <div id="msg"></div>
+      <label>
+        <span>Name</span>
+        <input name="entry.1016729938" type="text" />
+      </label>
+      <label>
+        <span>Subject</span>
+        <input name="entry.194394324" type="text" />
+      </label>
+      <label>
+        <span>Your Email</span>
+        <input name="entry.1770616864" type="email" />
+      </label>
+      <label>
+        <span>Message</span>
+        <textarea name=entry.544076676></textarea>
+      </label>
+      <input class="button" type="submit" value="Send" name="submit" />
+    </form>
+</section></div>
+          
+        </div>
+        <style type="text/css">#component-sytvy section {
+    padding: 4rem 0;
+  }
+    #component-sytvy section .container {
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-gap: 1rem;
+    }
+    #component-sytvy section form{
+      text-align:left;
+    }
+    #component-sytvy section input,#component-sytvy section button,#component-sytvy section textarea,#component-sytvy section select{
+      padding:7px;
+      background-color:var(--bg-color-secondary);
+      width:100%;
+      box-sizing:border-box;
+      border: 0;
+    }
+    #component-sytvy section button:focus, #component-sytvy section submit:focus{
+      outline:0;
+    }
+    #component-sytvy section textarea{
+      min-height:250px;
+      overflow:auto;
+    }
+    #component-sytvy section .button {
+      background-color:#04c1a0;
+      /* rgb(30,123,167); */
+      border-radius:99px;
+      color:#ffffff;
+      border:0;
+      width:auto;
+      cursor:pointer;
+      min-width:100px;
+      -webkit-appearance:none;
+      font-weight:600;
+    }
+    /*Label*/
+    #component-sytvy section label{
+      font-weight:600;
+      margin: 1.5rem 0;
+      display: block;
+    }
+    #component-sytvy section label span {
+        display: block;
+        padding-bottom: 0.25rem;
+      }
+  @media (min-width: 900px) {
+      #component-sytvy section .container {
+        grid-template-columns: 1fr 2fr;
+        grid-gap: 3rem;
+      }
+  }
+  #component-sytvy .hidden{
+    display:none;
+  }</style>
+      </div>
+      
+      <div class="block" id="block-yanzp">
+        <div class="primo-component" id="component-yanzp">
+          <div><footer>
+  <ul class="container">
+    <li>
+      <a href="https://twitter.com/elgatdolent" class="fab fa-twitter" title="Xavier Bolló - Twitter Profile">
+        <span class="sr-only">Xavier Bolló - Twitter Profile</span>
+      </a>
+    </li>
+    <li>
+      <a href="https://github.com/X80110/" class="fab fa-github" title="Xavier Bolló - Github Profile">
+        <span class="sr-only">Xavier Bolló - Github Profile</span>
+      </a>
+    </li>
+    <li>
+      <a href="www.linkedin.com/in/xavier-bollo" class="fab fa-linkedin" title="Linkedin Profile">
+        <span class="sr-only">Linkedin Profile</span>
+      </a>
+    </li>
+  </ul>
+  <div class="subfooter">
+    Made with <a href="https//www.svelte.dev">Svelte </a> & <a href="https://github.com/primo-af/primo">Primo</a>
+  </div>
+</footer>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/brands.css" integrity="sha384-V5Z1KgRRJyY878qCx7+zUeTDm0FgjoYrbmSortFqRPGz+Ue6XDe4uIiMqB3tB/wd" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/fontawesome.css" integrity="sha384-wESLQ85D6gbsF459vf1CiZ2+rr+CsxRY0RpiF1tLlQpDnAgg6rwdsUF1+Ics2bni" crossorigin="anonymous"></div>
+          
+        </div>
+        <style type="text/css">#component-yanzp footer a {
+      color: #04c1a0;
+    }
+    #component-yanzp footer ul {
+      padding: 4rem 0;
+      font-size: 2rem;
+      display: flex;
+      justify-content: center;
+    }
+    #component-yanzp footer ul li {
+        color: var(--text-color);
+        margin: 0 1rem;
+        transition: opacity 0.1s;
+      }
+    #component-yanzp footer ul li:hover {
+          opacity: 0.75;
+        }
+    #component-yanzp footer .subfooter {
+      color: #999;
+      padding: 1rem;
+      text-align:center;
+    }</style>
+      </div>
+      
+        
+        <link href="https://api.fontshare.com/css?f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
+      </body>
+    </html>
+  
